@@ -1,0 +1,15 @@
+{{define "title"}}Search Results{{end}}
+
+{{define "content"}}
+<h2>Search Results for "{{.q}}"</h2>
+
+    {{ range .posts }}
+    <div>
+        <h3><a href="{{.URL}}">{{.Title}}</a></h3>
+        <p class="byline">by {{.Author}} - {{.RenderedModifiedAt}}</p>
+    </div>
+{{ end }}
+
+
+
+{{end}}

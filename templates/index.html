@@ -1,0 +1,15 @@
+{{define "title"}}Index{{end}}
+
+{{define "content"}}
+<h2>Recent Posts</h2>
+
+{{ range .recent_posts }}
+<div>
+    <h3><a href="{{.URL}}">{{.Title}}</a></h3>
+    <p class="byline">by {{.Author}} - {{.RenderedModifiedAt}}</p>
+</div>
+{{ end }}
+
+
+
+{{end}}

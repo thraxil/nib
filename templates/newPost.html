@@ -1,0 +1,29 @@
+{{define "title"}}new post{{end}}
+
+{{define "content"}}
+
+<form action="." method="post" class="form">
+
+    <h4>New Post</h4>
+
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" name="title" placeholder="Title" id="title" class="form-control"/>
+        <span id="help-title" class="help-block">Leave empty and it will be generated from username and timestamp<span>        
+    </div>
+    <div class="form-group">
+        <label for="slug">Slug</label>
+        <input type="text" name="slug" placeholder="Slug" id="slug" class="form-control"/>
+        <span id="help-slug" class="help-block">Must be lowercase with no spaces or punctuation other than '-'. Leave empty and it will be generated from the title.</span>
+    </div>
+    <div class="form-group">
+        <label for="body">Body</label>
+        <textarea class="form-control" name="body" placeholder="Body of Post" rows="20"></textarea>
+        <span id="help-maint-body" class="help-block">Markdown supported</span>
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="Add Post" />
+    
+</form>
+
+{{end}}
