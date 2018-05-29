@@ -11,8 +11,8 @@ type Event struct {
 	Author    string
 	CreatedAt time.Time
 	Post      *datastore.Key
-	PreData   string
-	PostData  string
+	PreData   string `datastore:"PreData,noindex"`
+	PostData  string `datastore:"PostData,noindex"`
 }
 
 func (e Event) RenderedCreatedAt() string {

@@ -15,7 +15,7 @@ type Post struct {
 	Title      string    `json:"title"`
 	CreatedAt  time.Time `json:"created_at"`
 	ModifiedAt time.Time `json:"modified_at"`
-	Body       string    `json:"body"`
+	Body       string    `datastore:"Body,noindex"`
 	Author     string    `json:"author"`
 }
 
