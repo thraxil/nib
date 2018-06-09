@@ -163,7 +163,7 @@ func (r *Repository) PostFromSlug(slug string) (*Post, *datastore.Key, error) {
 }
 
 func (r *Repository) PostEvents(key *datastore.Key) ([]Event, error) {
-	q := datastore.NewQuery("Event").Filter("Post =", key)
+	q := datastore.NewQuery("Event").Filter("Post =", key).Order("-CreatedAt")
 	events := make([]Event, 0, 1)
 	if _, err := q.GetAll(r.ctx, &events); err != nil {
 		return nil, err
