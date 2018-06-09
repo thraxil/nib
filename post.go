@@ -53,6 +53,21 @@ func (p Post) RenderedBody() template.HTML {
 	return template.HTML(string(blackfriday.MarkdownCommon([]byte(p.LinkText()))))
 }
 
+func truncateString(s string, size int) string {
+	ns := s
+	if len(s) > size {
+		if size > 3 {
+			size -= 3
+		}
+		ns = s[0:size] + "..."
+	}
+	return ns
+}
+
+func (p Post) RenderedPreview() template.HTML {
+	return template.HTML(truncateString(string(blackfriday.MarkdownCommon([]byte(p.LinkText()))), 512))
+}
+
 func (p Post) AsJSON() string {
 	b, _ := json.Marshal(p)
 	return string(b)
