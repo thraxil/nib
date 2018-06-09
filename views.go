@@ -81,7 +81,7 @@ func username(u *user.User) string {
 
 func generateTitle(title string, author *user.User) string {
 	if title == "" {
-		return username(author) + ": " + time.Now().UTC().Format(time.UnixDate)
+		return username(author) + ": " + time.Now().UTC().Format("2006-01-02 15:04:05 MST")
 	}
 	return title
 }
