@@ -224,13 +224,14 @@ func (r *Repository) SearchPosts(q string) ([]Post, error) {
 	return posts, nil
 }
 
-func (r *Repository) RecentPosts() ([]Post, error) {
-	q := datastore.NewQuery("Post").Order("-CreatedAt").Limit(20)
+func (r *Repository) RecentPosts(limit, offset int) ([]Post, int, error) {
+	q := datastore.NewQuery("Post").Order("-CreatedAt").Limit(limit).Offset(offset)
 	posts := make([]Post, 0, 1)
 	if _, err := q.GetAll(r.ctx, &posts); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return posts, nil
+	cnt, err := datastore.NewQuery("Post").Count(r.ctx)
+	return posts, cnt, err
 }
 
 func (r *Repository) AllPosts() ([]Post, error) {

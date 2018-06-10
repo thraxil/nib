@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -18,13 +19,34 @@ func index(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	rep := NewRepository(ctx)
 
-	posts, err := rep.RecentPosts()
+	spage := r.FormValue("page")
+	page, err := strconv.Atoi(spage)
+	if err != nil {
+		page = 0
+	}
+	limit := 20
+	offset := limit * page
+
+	posts, cnt, err := rep.RecentPosts(limit, offset)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	next_page := fmt.Sprintf("%d", (offset+limit)/limit)
+	if offset+limit > cnt {
+		next_page = ""
+	}
+	prev_page := ""
+	if page > 0 {
+		prev_page = fmt.Sprintf("%d", page-1)
+	}
 	tc := make(map[string]interface{})
 	tc["recent_posts"] = posts
+	tc["next_page"] = next_page
+	tc["prev_page"] = prev_page
+	tc["page"] = fmt.Sprintf("%d", page)
+	tc["cnt"] = fmt.Sprintf("%d", cnt)
+
 	if err := indexTemplate.Execute(w, tc); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
