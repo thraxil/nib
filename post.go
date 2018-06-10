@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"html/template"
 	"regexp"
@@ -79,4 +80,22 @@ func (p Post) RenderedCreatedAt() string {
 
 func (p Post) RenderedModifiedAt() string {
 	return p.ModifiedAt.UTC().Format(time.UnixDate)
+}
+
+func AddComment(body, comment, author string, now time.Time) (string, error) {
+	var commentTemplate = template.Must(template.ParseFiles("templates/comment.html"))
+
+	tc := make(map[string]interface{})
+	tc["comment_body"] = comment
+	tc["author"] = author
+	tc["timestamp"] = now.UTC().Format(time.UnixDate)
+
+	var b bytes.Buffer
+	if err := commentTemplate.Execute(&b, tc); err != nil {
+		return body, err
+	}
+
+	commentsBody := b.String()
+	body = body + commentsBody + "\n"
+	return body, nil
 }
