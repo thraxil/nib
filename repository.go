@@ -234,13 +234,14 @@ func (r *Repository) RecentPosts(limit, offset int) ([]Post, int, error) {
 	return posts, cnt, err
 }
 
-func (r *Repository) AllPosts() ([]Post, error) {
-	q := datastore.NewQuery("Post").Order("Title")
+func (r *Repository) AllPosts(limit, offset int) ([]Post, int, error) {
+	q := datastore.NewQuery("Post").Order("Title").Limit(limit).Offset(offset)
 	posts := make([]Post, 0, 1)
 	if _, err := q.GetAll(r.ctx, &posts); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return posts, nil
+	cnt, err := datastore.NewQuery("Post").Count(r.ctx)
+	return posts, cnt, err
 }
 
 func (r *Repository) EventFromID(id int64) (*Event, error) {
