@@ -1,0 +1,30 @@
+{{define "title"}}new post{{end}}
+
+{{define "content"}}
+
+<h1>No post with that name exists yet. Create one?</h1>
+
+<form action="/new/" method="post" class="form">
+
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" name="title" placeholder="Title" id="title" class="form-control"
+               value="{{.title}}" />
+    </div>
+    <div class="form-group">
+        <label for="slug">Slug</label>
+        <input type="text" name="slug" placeholder="Slug" id="slug"
+               value="{{.slug}}"
+               class="form-control"/>
+    </div>
+    <div class="form-group">
+        <label for="body">Body</label>
+        <textarea class="form-control" name="body" placeholder="Body of Post" rows="20"></textarea>
+        <span id="help-maint-body" class="help-block">Markdown supported</span>
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="Add Post" />
+    
+</form>
+
+{{end}}

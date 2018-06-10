@@ -105,7 +105,14 @@ func generateSlug(slug, title string, ctx appengine.Context) string {
 	return slug
 }
 
+func unSlug(slug string) string {
+	// convert a slug to a likely title string
+	slug = strings.Replace(slug, "-", " ", -1)
+	return strings.Title(slug)
+}
+
 var postTemplate = template.Must(template.ParseFiles("templates/base.html", "templates/post.html"))
+var post404Template = template.Must(template.ParseFiles("templates/base.html", "templates/post404.html"))
 
 func post(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -124,7 +131,13 @@ func post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if post == nil {
-		http.Error(w, "Not Found", http.StatusNotFound)
+		// give them a form to add a post with that slug
+		tc := make(map[string]interface{})
+		tc["slug"] = slug
+		tc["title"] = unSlug(slug)
+		if err := post404Template.Execute(w, tc); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
