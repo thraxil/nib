@@ -26,6 +26,7 @@ func (r *Repository) User() *user.User {
 
 func (r *Repository) NewPost(title, slug, body string, author *user.User) (*Post, error) {
 	now := time.Now()
+	slug = r.UniqueSlug(slug)
 	post := &Post{
 		Title:      title,
 		Slug:       slug,
@@ -68,6 +69,16 @@ func (r *Repository) NewPost(title, slug, body string, author *user.User) (*Post
 		return nil, err
 	}
 	return post, nil
+}
+
+func (r *Repository) UniqueSlug(slug string) string {
+	suffix := ""
+	cnt := 0
+	for r.SlugExists(slug + suffix) {
+		suffix = fmt.Sprintf("-%d", cnt)
+		cnt++
+	}
+	return slug + suffix
 }
 
 func (r *Repository) DeletePost(post *Post, key *datastore.Key) error {
@@ -160,6 +171,15 @@ func (r *Repository) PostFromSlug(slug string) (*Post, *datastore.Key, error) {
 	key = keys[0]
 
 	return &post, key, nil
+}
+
+func (r *Repository) SlugExists(slug string) bool {
+	q := datastore.NewQuery("Post").Filter("Slug =", slug)
+	c, err := q.Count(r.ctx)
+	if err != nil || c < 1 {
+		return false
+	}
+	return true
 }
 
 type KeyedEvent struct {
