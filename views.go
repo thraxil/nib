@@ -211,6 +211,20 @@ func post(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, post.URL(), http.StatusFound)
 		return
 	}
+	if len(parts) == 5 && parts[3] == "append" && r.Method == "POST" {
+		append_body := r.FormValue("body")
+		now := time.Now()
+
+		body := post.Body + "\n\n---\n" + "<p class=\"byline\">" + now.UTC().Format(time.UnixDate) + "</p>\n\n" + append_body
+		err = rep.EditPost(post, key, post.Title, body)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, post.URL(), http.StatusFound)
+		return
+	}
 	http.Error(w, "Bad Request", http.StatusInternalServerError)
 }
 
