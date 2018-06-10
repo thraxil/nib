@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -193,5 +194,43 @@ func all(w http.ResponseWriter, r *http.Request) {
 	tc["posts"] = posts
 	if err := allTemplate.Execute(w, tc); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+var eventTemplate = template.Must(template.ParseFiles("templates/base.html", "templates/event.html"))
+
+func event(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		http.Error(w, "bad request", 404)
+		return
+	}
+	id, err := strconv.Atoi(parts[2])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rep := NewRepository(ctx)
+	event, err := rep.EventFromID(int64(id))
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if event == nil {
+		http.Error(w, "Not Found", http.StatusNotFound)
+		return
+	}
+
+	if len(parts) == 4 {
+		tc := make(map[string]interface{})
+		tc["event"] = event
+
+		if err := eventTemplate.Execute(w, tc); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
 	}
 }

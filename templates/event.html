@@ -1,0 +1,43 @@
+{{define "title"}}{{end}}
+
+{{ define "content" }}
+
+<h1>Event: {{.event.Action}} - {{.event.RenderedCreatedAt}} by {{.event.Author}}</h2>
+
+<div class="row">
+
+    <div class="col-sm-6">
+        <h2>Pre-Event Version</h2>
+        {{ if .event.PreData }}
+        {{ $p := .event.PrePost }}
+        <dl>
+            <dt>Title</dt>
+            <dd>{{$p.Title}}</dd>
+            <dt>Slug</dt>
+            <dd>{{$p.Slug}}</dd>
+        </dl>
+        {{$p.RenderedBody}}
+        {{ else }}
+        <p class="bg-info">no pre-event data</p>
+        {{ end }}
+    </div>
+
+    <div class="col-sm-6">
+        <h2>Post-Event Version</h2>
+        {{ if .event.PostData }}
+        {{ $p := .event.PostPost }}
+        <dl>
+            <dt>Title</dt>
+            <dd>{{$p.Title}}</dd>
+            <dt>Slug</dt>
+            <dd>{{$p.Slug}}</dd>
+        </dl>
+        {{$p.RenderedBody}}
+        {{ else }}
+        <p class="bg-info">no post-event data</p>
+        {{ end }}
+    </div>
+
+</div>
+
+{{ end }}

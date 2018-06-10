@@ -30,9 +30,9 @@
     </tr>
     {{ range .events }}
     <tr>
-        <td>{{.Action}}</td>
-        <td>{{.RenderedCreatedAt}}</td>
-        <td>{{.Author}}</td>
+        <td><a href="{{.URL}}">{{.Event.Action}}</a></td>
+        <td>{{.Event.RenderedCreatedAt}}</td>
+        <td>{{.Event.Author}}</td>
     </tr>
     {{ end }}
 </table>

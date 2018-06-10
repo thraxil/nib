@@ -162,13 +162,28 @@ func (r *Repository) PostFromSlug(slug string) (*Post, *datastore.Key, error) {
 	return &post, key, nil
 }
 
-func (r *Repository) PostEvents(key *datastore.Key) ([]Event, error) {
+type KeyedEvent struct {
+	Key   *datastore.Key
+	Event Event
+}
+
+func (ke KeyedEvent) URL() string {
+	return fmt.Sprintf("/event/%d/", ke.Key.IntID())
+}
+
+func (r *Repository) PostEvents(key *datastore.Key) ([]KeyedEvent, error) {
 	q := datastore.NewQuery("Event").Filter("Post =", key).Order("-CreatedAt")
 	events := make([]Event, 0, 1)
-	if _, err := q.GetAll(r.ctx, &events); err != nil {
+	kevents := make([]KeyedEvent, 0, 1)
+
+	keys, err := q.GetAll(r.ctx, &events)
+	if err != nil {
 		return nil, err
 	}
-	return events, nil
+	for i := 0; i < len(events); i++ {
+		kevents = append(kevents, KeyedEvent{keys[i], events[i]})
+	}
+	return kevents, nil
 }
 
 func (r *Repository) SearchPosts(q string) ([]Post, error) {
@@ -205,4 +220,11 @@ func (r *Repository) AllPosts() ([]Post, error) {
 		return nil, err
 	}
 	return posts, nil
+}
+
+func (r *Repository) EventFromID(id int64) (*Event, error) {
+	var event Event
+	key := datastore.NewKey(r.ctx, "Event", "", id, nil)
+	err := datastore.Get(r.ctx, key, &event)
+	return &event, err
 }

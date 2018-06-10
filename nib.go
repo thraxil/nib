@@ -11,6 +11,7 @@ func main() {
 	http.HandleFunc("/all/", all)
 	http.HandleFunc("/new/", newPost)
 	http.HandleFunc("/post/", post)
+	http.HandleFunc("/event/", event)
 	http.HandleFunc("/search/", searchResults)
 	appengine.Main()
 }
