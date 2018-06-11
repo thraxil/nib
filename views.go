@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -133,7 +134,6 @@ func unSlug(slug string) string {
 	return strings.Title(slug)
 }
 
-var postTemplate = template.Must(template.ParseFiles("templates/base.html", "templates/post.html"))
 var post404Template = template.Must(template.ParseFiles("templates/base.html", "templates/post404.html"))
 
 func post(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +174,16 @@ func post(w http.ResponseWriter, r *http.Request) {
 		tc["post"] = post
 		tc["events"] = events
 
-		if err := postTemplate.Execute(w, tc); err != nil {
+		funcMap := template.FuncMap{
+			"htmlescaper": html.EscapeString,
+		}
+
+		postTemplate, err := template.New("base.html").Funcs(funcMap).ParseFiles("templates/base.html", "templates/post.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		if err = postTemplate.Execute(w, tc); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return

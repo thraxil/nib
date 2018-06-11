@@ -61,7 +61,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <textarea class="form-control" name="body" rows="20">{{.post.Body}}</textarea>
+                        <textarea class="form-control" name="body" rows="20">{{.post.Body|htmlescaper}}</textarea>
                         <span id="status-body" class="help-block">Markdown supported.</span>
                     </div>
                 </div>
