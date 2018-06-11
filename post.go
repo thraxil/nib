@@ -66,7 +66,7 @@ func truncateString(s string, size int) string {
 }
 
 func (p Post) RenderedPreview() template.HTML {
-	return template.HTML(truncateString(string(blackfriday.MarkdownCommon([]byte(p.LinkText()))), 512))
+	return template.HTML(truncateString(string(blackfriday.MarkdownCommon([]byte(p.LinkText()))), 256))
 }
 
 func (p Post) AsJSON() string {
