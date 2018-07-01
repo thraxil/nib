@@ -225,7 +225,7 @@ func (r *Repository) SearchPosts(q string) ([]Post, error) {
 }
 
 func (r *Repository) RecentPosts(limit, offset int) ([]Post, int, error) {
-	q := datastore.NewQuery("Post").Order("-CreatedAt").Limit(limit).Offset(offset)
+	q := datastore.NewQuery("Post").Order("-ModifiedAt").Limit(limit).Offset(offset)
 	posts := make([]Post, 0, 1)
 	if _, err := q.GetAll(r.ctx, &posts); err != nil {
 		return nil, 0, err
