@@ -239,11 +239,9 @@ func post(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		author := user.Current(ctx)
 
-		body, err := AddComment(post.Body, comment_body, username(author), now)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		body := post.Body + "\n\n<hr class='comment'>\n\n" + comment_body + "\n\n<p class=\"byline\"><span class=\"comment-author\">" +
+			username(author) + "</span> - " + now.UTC().Format(time.UnixDate) + "</p>\n\n"
+
 		err = rep.EditPost(post, key, post.Title, body)
 
 		if err != nil {
