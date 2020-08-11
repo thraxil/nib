@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"appengine/datastore"
+	"google.golang.org/appengine/datastore"
 )
 
 type Event struct {

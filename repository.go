@@ -1,20 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"appengine"
-	"appengine/datastore"
-	"appengine/search"
-	"appengine/user"
+	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/search"
+	"google.golang.org/appengine/user"
 )
 
 type Repository struct {
-	ctx appengine.Context
+	ctx context.Context
 }
 
-func NewRepository(ctx appengine.Context) *Repository {
+func NewRepository(ctx context.Context) *Repository {
 	return &Repository{ctx}
 }
 
@@ -40,7 +40,6 @@ func (r *Repository) NewPost(title, slug, body string, author *user.User) (*Post
 
 	nkey, err := datastore.Put(r.ctx, key, post)
 	if err != nil {
-		r.ctx.Errorf("datastore put failed")
 		return nil, err
 	}
 	ekey := datastore.NewIncompleteKey(r.ctx, "Event", nil)
@@ -54,18 +53,15 @@ func (r *Repository) NewPost(title, slug, body string, author *user.User) (*Post
 	}
 	_, err = datastore.Put(r.ctx, ekey, event)
 	if err != nil {
-		r.ctx.Errorf("datastore event put failed")
 		return nil, err
 	}
 
 	index, err := search.Open("posts")
 	if err != nil {
-		r.ctx.Errorf("search open failed")
 		return nil, err
 	}
 	_, err = index.Put(r.ctx, fmt.Sprintf("%d", nkey.IntID()), post)
 	if err != nil {
-		r.ctx.Errorf("search put failed")
 		return nil, err
 	}
 	return post, nil
@@ -94,7 +90,6 @@ func (r *Repository) DeletePost(post *Post, key *datastore.Key) error {
 	}
 	_, err := datastore.Put(r.ctx, ekey, event)
 	if err != nil {
-		r.ctx.Errorf("datastore event put failed")
 		return err
 	}
 
@@ -130,24 +125,20 @@ func (r *Repository) EditPost(post *Post, key *datastore.Key, title, body string
 	}
 	_, err := datastore.Put(r.ctx, ekey, event)
 	if err != nil {
-		r.ctx.Errorf("datastore event put failed")
 		return err
 	}
 
 	_, err = datastore.Put(r.ctx, key, post)
 	if err != nil {
-		r.ctx.Errorf("datastore put failed")
 		return err
 	}
 
 	index, err := search.Open("posts")
 	if err != nil {
-		r.ctx.Errorf("search open failed")
 		return err
 	}
 	_, err = index.Put(r.ctx, fmt.Sprintf("%d", key.IntID()), post)
 	if err != nil {
-		r.ctx.Errorf("search put failed")
 		return err
 	}
 	return nil

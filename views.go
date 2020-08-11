@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"net/http"
@@ -10,14 +11,13 @@ import (
 	"text/template"
 	"time"
 
-	"appengine"
-	"appengine/user"
+	"google.golang.org/appengine/user"
 )
 
 var indexTemplate = template.Must(template.ParseFiles("templates/base.html", "templates/index.html"))
 
 func index(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := r.Context()
 	rep := NewRepository(ctx)
 
 	spage := r.FormValue("page")
@@ -56,7 +56,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 var searchTemplate = template.Must(template.ParseFiles("templates/base.html", "templates/search.html"))
 
 func searchResults(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := r.Context()
 	rep := NewRepository(ctx)
 	q := r.FormValue("q")
 	posts, err := rep.SearchPosts(q)
@@ -77,7 +77,7 @@ var newPostTemplate = template.Must(template.ParseFiles("templates/base.html", "
 
 func newPost(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		ctx := appengine.NewContext(r)
+		ctx := r.Context()
 		author := user.Current(ctx)
 		title := generateTitle(r.FormValue("title"), author)
 		slug := generateSlug(r.FormValue("slug"), title, ctx)
@@ -119,7 +119,7 @@ func slugify(s string) string {
 	return s
 }
 
-func generateSlug(slug, title string, ctx appengine.Context) string {
+func generateSlug(slug, title string, ctx context.Context) string {
 	if slug == "" {
 		slug = title
 	}
@@ -137,7 +137,7 @@ func unSlug(slug string) string {
 var post404Template = template.Must(template.ParseFiles("templates/base.html", "templates/post404.html"))
 
 func post(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := r.Context()
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {
 		http.Error(w, "bad request", 404)
@@ -257,7 +257,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 var allTemplate = template.Must(template.ParseFiles("templates/base.html", "templates/all.html"))
 
 func all(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := r.Context()
 	rep := NewRepository(ctx)
 
 	spage := r.FormValue("page")
@@ -295,7 +295,7 @@ func all(w http.ResponseWriter, r *http.Request) {
 var eventTemplate = template.Must(template.ParseFiles("templates/base.html", "templates/event.html"))
 
 func event(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := r.Context()
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {
 		http.Error(w, "bad request", 404)
